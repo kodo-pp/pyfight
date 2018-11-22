@@ -1,8 +1,15 @@
-from textured_entity import TexturedEntity
+from pygame.sprite import Sprite
 
-class BallEntity(TexturedEntity):
-    def __init__(self, texture_name):
-        super().__init__(texture_name)
+from load_image import load_image
+
+
+class Ball(Sprite):
+    def __init__(self, speed, image_filename, screen_size):
+        super().__init__()
+        self.image = load_image(image_filename)
+        self.rect = self.image.get_rect()
+        self.speed = speed
+        self.screen_size = screen_size
 
     def should_bounce(self, size):
         width, height = size
@@ -11,7 +18,8 @@ class BallEntity(TexturedEntity):
         return should_bounce_x, should_bounce_y
 
     def bounced_move(self, size, speed):
-        self.move(speed)
+        self.rect.x += speed[0]
+        self.rect.y += speed[1]
         bx, by = self.should_bounce(size)
         resulting_speed = [*speed]
         if bx:
@@ -19,3 +27,6 @@ class BallEntity(TexturedEntity):
         if by:
             resulting_speed[1] = -resulting_speed[1]
         return resulting_speed
+
+    def update(self, *args):
+        self.speed = self.bounced_move(self.screen_size, self.speed)

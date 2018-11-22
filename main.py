@@ -1,30 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pygame
-from load_image import load_image
-from run_with_fps import run_with_fps, ExitLoop
+from traceback import print_exc 
 from threading import Thread, Lock
 
-from ball import BallEntity
+import pygame
 
+from load_image import load_image
+from run_with_fps import run_with_fps, ExitLoop
+from ball import Ball
+from fatal_exceptions import fatal_exceptions
+from enemy import Enemy
 
 class Game:
-    def __init__(self):
+    def __init__(self, window_title):
         # Object initialization
         self.lock = Lock()
         self.do_quit = False
+        self.sprites = pygame.sprite.Group()
 
         # Pygame initialization
         pygame.init()
         self.size = self.width, self.height = 800, 600
         self.screen = pygame.display.set_mode(self.size)
+        pygame.display.set_caption(window_title)
 
-        # Entities initialization
-        self.ball1 = BallEntity(texture_name='ball1.png')
-        self.ball2 = BallEntity(texture_name='ball2.png')
-        self.speed1 = [2, 2]
-        self.speed2 = [5, -3]
+        # Sprites initialization
+        self.sprites.add(Enemy(self, 'enemy.png', gravity=1700))
 
     def draw(self):
         with self.lock:
@@ -32,24 +34,36 @@ class Game:
                 raise ExitLoop()
 
             self.screen.fill((0, 0, 0))
-            self.ball1.draw(self.screen)
-            self.ball2.draw(self.screen)
+            self.sprites.draw(self.screen)
             pygame.display.flip()
 
     def process(self):
         with self.lock:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.do_quit = True
+                self.process_event(event)
+            self.process_keys()
             if self.do_quit:
                 raise ExitLoop()
 
-            self.speed1 = self.ball1.bounced_move(size=self.size, speed=self.speed1)
-            self.speed2 = self.ball2.bounced_move(size=self.size, speed=self.speed2)
+            self.sprites.update()
 
+    def process_event(self, event):
+        if event.type == pygame.QUIT:
+            self.do_quit = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                self.do_quit = True
+
+    def process_keys(self):
+        keys = pygame.key.get_pressed()
+        # TODO: add controls
+        pass
+
+    @fatal_exceptions
     def draw_loop(self, fps):
         run_with_fps(fps, self.draw)
 
+    @fatal_exceptions
     def process_loop(self, tps):
         run_with_fps(tps, self.process)
 
@@ -65,7 +79,7 @@ class Game:
 
 
 def main():
-    game = Game()
+    game = Game('pyfight')
     game.loop(fps=60, tps=60)
 
 if __name__ == '__main__':
