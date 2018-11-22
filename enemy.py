@@ -5,6 +5,7 @@ from falling_sprite import FallingSprite
 from load_image import load_image
 from clamp import clamp
 from sign_choose import sign_choose
+from particle_explosion import particle_explosion
 
 GRACE_PERIOD = 0.2
 
@@ -39,6 +40,16 @@ class Enemy(FallingSprite):
         cur_time = time()
         if self.hit_at is not None and cur_time - self.hit_at < GRACE_PERIOD:
             return
+        particle_explosion(
+            game=self.game,
+            image='enemy_hit_particle.png',
+            pos=self.rect.center,
+            min_speed=30,
+            max_speed=50,
+            min_lifespan=0.3,
+            max_lifespan=0.8,
+            count=5
+        )
         self.hit_at = cur_time
         self.health -= 1
         if self.health <= 0:
@@ -51,6 +62,16 @@ class Enemy(FallingSprite):
     def die(self):
         super().die()
         self.loot()
+        particle_explosion(
+            game=self.game,
+            image='enemy_death_particle.png',
+            pos=self.rect.center,
+            min_speed=50,
+            max_speed=70,
+            min_lifespan=0.5,
+            max_lifespan=0.8,
+            count=10
+        )
 
     def loot(self):
         self.loot_health(rd.randint(1, 3))

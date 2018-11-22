@@ -19,6 +19,7 @@ from clamp import clamp
 from sign_choose import sign_choose
 from game_over import GameOver
 from laser import Laser
+from particle_explosion import particle_explosion
 
 class Player(FallingSprite):
     def __init__(self, **kwargs):
@@ -86,6 +87,16 @@ class Player(FallingSprite):
         cur_time = time()
         if self.hit_at is not None and cur_time - self.hit_at < GRACE_PERIOD:
             return
+        particle_explosion(
+            game=self.game,
+            image='player_hit_particle.png',
+            pos=self.rect.center,
+            min_speed=30,
+            max_speed=50,
+            min_lifespan=0.3,
+            max_lifespan=0.8,
+            count=8
+        )
         self.hit_at = cur_time
         self.health -= 1
         if self.health <= 0:

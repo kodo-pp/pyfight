@@ -4,6 +4,7 @@ from pygame.sprite import Sprite
 
 from load_image import load_image
 from enemy import Enemy
+from particle_explosion import particle_explosion
 
 
 class Laser(Sprite):
@@ -42,4 +43,14 @@ class Laser(Sprite):
 
     def die(self):
         self.dead = True
+        particle_explosion(
+            game=self.game,
+            image='laser_particle.png',
+            pos=self.rect.center,
+            min_speed=30,
+            max_speed=50,
+            min_lifespan=0.3,
+            max_lifespan=0.5,
+            count=7
+        )
 
