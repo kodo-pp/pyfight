@@ -12,12 +12,16 @@ from player import Player
 from health_osd import HealthOSD
 from game_over import GameOver
 
+MAX_ENEMY_HP = 5
+MIN_ENEMY_HP = 3
+
 class Game:
     def __init__(self, window_title):
         # Object initialization
         self.lock = Lock()
         self.do_quit = False
         self.sprites = pygame.sprite.Group()
+        self.add_queue = []
 
         # Pygame initialization
         pygame.init()
@@ -35,7 +39,7 @@ class Game:
         self.last_mob_spawn = None
 
     def maybe_spawn_mobs(self):
-        SPAWN_MOB_EACH = 5.0
+        SPAWN_MOB_EACH = 2.0
         cur_time = time()
         if self.last_mob_spawn is None:
             self.last_mob_spawn = cur_time
@@ -43,9 +47,16 @@ class Game:
         if cur_time - self.last_mob_spawn < SPAWN_MOB_EACH:
             return False
         self.last_mob_spawn = cur_time
-        self.sprites.add(Enemy(image='enemy.png', game=self, gravity=1700, pos=[rd.randint(0, 800), 0]))
+        self.sprites.add(
+            Enemy(
+                health=rd.randint(MIN_ENEMY_HP, MAX_ENEMY_HP),
+                image='enemy.png',
+                game=self,
+                gravity=1700,
+                pos=[rd.randint(0, 800), 0]
+            )
+        )
         return True
-
 
     def draw(self):
         with self.lock:
@@ -64,6 +75,9 @@ class Game:
             if self.do_quit:
                 raise ExitLoop()
             try:
+                self.sprites.add(*self.add_queue)
+                self.add_queue = []
+                self.remove_dead_sprites()
                 self.sprites.update()
                 self.maybe_spawn_mobs()
             except GameOver:
@@ -85,6 +99,8 @@ class Game:
             self.player.go_right()
         if keys[pygame.K_UP]:
             self.player.jump()
+        if keys[pygame.K_SPACE]:
+            self.player.maybe_shoot()
         pass
 
     @fatal_exceptions
@@ -105,6 +121,9 @@ class Game:
         draw_thread.join()
         process_thread.join()
 
+    def add_sprite(self, sprite):
+        self.add_queue.append(sprite)
+
     def game_over(self):
         self.health_osd.update()
         self.sprites.draw(self.screen)
@@ -114,3 +133,10 @@ class Game:
         pygame.display.flip()
         sleep(5)
         raise ExitLoop()
+
+    def remove_dead_sprites(self):
+        to_remove = []
+        for i in self.sprites.sprites():
+            if i.dead:
+                to_remove.append(i)
+        self.sprites.remove(*to_remove)

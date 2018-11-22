@@ -1,12 +1,3 @@
-import random as rd
-from time import time
-
-from falling_sprite import FallingSprite
-from load_image import load_image
-from clamp import clamp
-from sign_choose import sign_choose
-from game_over import GameOver
-
 MAX_SPEED = 300.0
 JUMP_SPEED = 700.0
 SPEED_INCREMENT = 50.0
@@ -16,6 +7,18 @@ FRICTION = 0.15
 
 MAX_HEALTH = 10
 GRACE_PERIOD = 0.4
+
+LASER_COOLDOWN = 0.1
+
+import random as rd
+from time import time
+
+from falling_sprite import FallingSprite
+from load_image import load_image
+from clamp import clamp
+from sign_choose import sign_choose
+from game_over import GameOver
+from laser import Laser
 
 class Player(FallingSprite):
     def __init__(self, **kwargs):
@@ -29,6 +32,7 @@ class Player(FallingSprite):
         self.hit_at = None
         self.is_hit = False
         self.locked = False
+        self.last_shot = None
 
     def go_left(self):
         if self.locked:
@@ -89,5 +93,26 @@ class Player(FallingSprite):
 
         vx = sign_choose(enemy.rect.center[0] - self.rect.center[0], -200, rd.choice([-200, 200]), 200)
         self.locked = True
-        self.speed = [vx, -500.0]
+        self.speed = [vx, -500.0] 
+
+    def shoot(self):
+        speed = [sign_choose(self.speed[0], 1000, None, -1000), 0]
+        if speed[0] is None:
+            return False
+        laser = Laser(self.game, speed, self.rect.center)
+        self.game.add_sprite(laser)
+        return True
+    
+    def maybe_shoot(self):
+        cur_time = time()
+        if self.last_shot is None:
+            self.last_shot = cur_time
+            return self.shoot()
+
+        if cur_time - self.last_shot < LASER_COOLDOWN:
+            return False
+        self.last_shot = cur_time
+        self.shoot()
+        return True
+        
         

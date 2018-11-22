@@ -10,6 +10,7 @@ class FallingSprite(Sprite):
         self.gravity = gravity
         self.last_time = None
         self.x, self.y = pos
+        self.dead = False
 
     def fall(self):
         if self.last_time is None:
@@ -56,3 +57,6 @@ class FallingSprite(Sprite):
 
     def update(self):
         self.fall()
+
+    def die(self):
+        self.dead = True

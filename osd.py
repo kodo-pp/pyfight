@@ -6,3 +6,4 @@ class OSD(Sprite):
         super().__init__()
         self.game = game
         self.pos = pos
+        self.dead = False
