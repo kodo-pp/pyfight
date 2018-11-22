@@ -5,13 +5,13 @@ from falling_sprite import FallingSprite
 from load_image import load_image
 from clamp import clamp
 from sign_choose import sign_choose
-from game import GameOver
+from game_over import GameOver
 
 MAX_SPEED = 300.0
 JUMP_SPEED = 700.0
 SPEED_INCREMENT = 50.0
 
-AIR_RESISTANCE = 0.03
+AIR_RESISTANCE = 0.01
 FRICTION = 0.15
 
 MAX_HEALTH = 10
@@ -47,8 +47,10 @@ class Player(FallingSprite):
 
     def jump(self):
         if self.locked:
-            return
-        super().jump(JUMP_SPEED)
+            return False
+        if self.maybe_wall_jump():
+            return True
+        return super().jump(JUMP_SPEED)
 
     def update(self):
         super().update()
@@ -64,6 +66,17 @@ class Player(FallingSprite):
             self.speed[0] *= (1.0 - FRICTION)
         else:
             self.speed[0] *= (1.0 - AIR_RESISTANCE)
+
+    def maybe_wall_jump(self):
+        if self.hits_right_wall():
+            self.speed = [-MAX_SPEED, -JUMP_SPEED]
+            self.locked = True
+            return True
+        if self.hits_left_wall():
+            self.speed = [MAX_SPEED, -JUMP_SPEED]
+            self.locked = True
+            return True
+        return False
 
     def hit_by(self, enemy):
         cur_time = time()

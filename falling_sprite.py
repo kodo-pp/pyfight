@@ -42,9 +42,17 @@ class FallingSprite(Sprite):
     def is_on_ground(self):
         return abs(self.rect.bottom - self.game.height) < 1e-5
 
+    def hits_right_wall(self):
+        return abs(self.rect.right - self.game.width) < 1e-5
+
+    def hits_left_wall(self):
+        return abs(self.rect.left) < 1e-5
+
     def jump(self, speed):
         if self.is_on_ground():
             self.speed[1] = -speed
+            return True
+        return False
 
     def update(self):
         self.fall()
