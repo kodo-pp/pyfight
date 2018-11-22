@@ -4,17 +4,17 @@ from pygame.sprite import Sprite
 
 
 class FallingSprite(Sprite):
-    def __init__(self, game, gravity):
+    def __init__(self, game, gravity, pos=[0,0]):
         super().__init__()
         self.game = game
         self.gravity = gravity
         self.last_time = None
-        self.x = 0
-        self.y = 100
+        self.x, self.y = pos
 
     def fall(self):
         if self.last_time is None:
             self.last_time = time()
+            self.rect.center = self.x, self.y
             return
         delta_time = time() - self.last_time
         self.last_time = time()
@@ -30,10 +30,10 @@ class FallingSprite(Sprite):
             self.speed[1] = 0
         if self.rect.left + delta_x < 0:
             delta_x = -self.rect.left
-            self.speed[0] *= -1
+            self.speed[0] = 0
         if self.rect.right + delta_x >= self.game.width:
             delta_x = self.game.width - self.rect.right
-            self.speed[0] *= -1
+            self.speed[0] = 0
 
         self.x += delta_x
         self.y += delta_y

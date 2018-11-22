@@ -3,6 +3,7 @@
 
 from traceback import print_exc 
 from threading import Thread, Lock
+from time import sleep
 
 import pygame
 
@@ -11,6 +12,9 @@ from run_with_fps import run_with_fps, ExitLoop
 from ball import Ball
 from fatal_exceptions import fatal_exceptions
 from enemy import Enemy
+from player import Player
+from health_osd import HealthOSD
+from game import GameOver
 
 class Game:
     def __init__(self, window_title):
@@ -26,7 +30,13 @@ class Game:
         pygame.display.set_caption(window_title)
 
         # Sprites initialization
-        self.sprites.add(Enemy(self, 'enemy.png', gravity=1700))
+        self.sprites.add(Enemy(image='enemy.png', game=self, gravity=1700, pos=[500, 200]))
+
+        self.player = Player(game=self, gravity=1700, pos=[300, 200])
+        self.sprites.add(self.player)
+
+        self.health_osd = HealthOSD(game=self, pos=[620, 18])
+        self.sprites.add(self.health_osd)
 
     def draw(self):
         with self.lock:
@@ -44,8 +54,11 @@ class Game:
             self.process_keys()
             if self.do_quit:
                 raise ExitLoop()
-
-            self.sprites.update()
+            try:
+                self.sprites.update()
+            except GameOver:
+                self.do_quit = True
+                self.game_over()
 
     def process_event(self, event):
         if event.type == pygame.QUIT:
@@ -56,6 +69,12 @@ class Game:
 
     def process_keys(self):
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.player.go_left()
+        if keys[pygame.K_RIGHT]:
+            self.player.go_right()
+        if keys[pygame.K_UP]:
+            self.player.jump()
         # TODO: add controls
         pass
 
@@ -77,6 +96,13 @@ class Game:
         draw_thread.join()
         process_thread.join()
 
+    def game_over(self):
+        image = load_image('game_over.png')
+        rect = pygame.Rect((0, 0), self.size)
+        self.screen.blit(image, rect)
+        pygame.display.flip()
+        sleep(5)
+        raise ExitLoop()
 
 def main():
     game = Game('pyfight')
