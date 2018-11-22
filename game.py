@@ -138,24 +138,24 @@ class Game:
 
     def process_keys(self):
         keys = pygame.key.get_pressed()
-        if not self.player1.dead:
-            if keys[pygame.K_LEFT]:
-                self.player1.go_left()
-            if keys[pygame.K_RIGHT]:
-                self.player1.go_right()
-            if keys[pygame.K_UP]:
-                self.player1.jump()
-            if keys[pygame.K_m]:
-                self.player1.maybe_shoot()
         if not self.player2.dead:
-            if keys[pygame.K_s]:
+            if keys[pygame.K_LEFT]:
                 self.player2.go_left()
-            if keys[pygame.K_f]:
+            if keys[pygame.K_RIGHT]:
                 self.player2.go_right()
-            if keys[pygame.K_e]:
+            if keys[pygame.K_UP]:
                 self.player2.jump()
-            if keys[pygame.K_1]:
+            if keys[pygame.K_m]:
                 self.player2.maybe_shoot()
+        if not self.player1.dead:
+            if keys[pygame.K_s]:
+                self.player1.go_left()
+            if keys[pygame.K_f]:
+                self.player1.go_right()
+            if keys[pygame.K_e]:
+                self.player1.jump()
+            if keys[pygame.K_1]:
+                self.player1.maybe_shoot()
 
     @fatal_exceptions
     def draw_loop(self, fps):
