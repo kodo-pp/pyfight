@@ -9,7 +9,6 @@ import pygame
 
 from load_image import load_image
 from run_with_fps import run_with_fps, ExitLoop
-from ball import Ball
 from fatal_exceptions import fatal_exceptions
 from enemy import Enemy
 from player import Player
