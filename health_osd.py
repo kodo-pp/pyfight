@@ -21,18 +21,19 @@ class Heart(OSD):
 
 
 class HealthOSD(OSD):
-    def __init__(self, pos, **kwargs):
+    def __init__(self, pos, target, **kwargs):
         super().__init__(pos=pos, **kwargs)
         self.image = Surface((36 * MAX_HEALTH, 36))
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.hearts = Group()
+        self.target = target
         for i in range(MAX_HEALTH):
             self.hearts.add(Heart(i, pos=[-1, -1], **kwargs))
         self.last_health = -1
 
     def update(self):
-        health = self.game.player.health
+        health = self.target.health
         if health == self.last_health:
             return
         self.last_health = health

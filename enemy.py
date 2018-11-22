@@ -19,18 +19,22 @@ class Enemy(FallingSprite):
         self.health = health
 
     def maybe_hit_player(self):
-        if self.rect.colliderect(self.game.player.rect):
-            self.game.player.hit_by(self)
+        if self.rect.colliderect(self.game.player1.rect):
+            self.game.player1.hit_by(self)
+            return True
+        if self.rect.colliderect(self.game.player2.rect):
+            self.game.player2.hit_by(self)
             return True
         return False
 
     def update(self):
         super().update()
         self.maybe_hit_player()
+        player = self.game.get_nearest_player(self.rect.center)
         
         vy = 700                                          # Vertical velocity
         if self.jump(vy):
-            player_pos = self.game.player.rect.center
+            player_pos = player.rect.center
             dx = player_pos[0] - self.x                   # Δx (signed distance)
             g = self.gravity
             vx = clamp((dx * g) / (2.0 * vy), -250, 250)  # Horizontal velocity (calculated)
@@ -75,6 +79,8 @@ class Enemy(FallingSprite):
 
     def loot(self):
         self.loot_health(rd.randint(1, 3))
+        self.game.score += 1
 
     def loot_health(self, hp):
-        self.game.player.health = min(self.game.player.health + hp, 10)
+        player = self.game.get_random_player()
+        player.health = min(player.health + hp, 10)

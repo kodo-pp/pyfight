@@ -4,7 +4,7 @@
 from game import Game
 
 def main():
-    game = Game('pyfight')
+    game = Game()
     game.loop(fps=60, tps=60)
 
 if __name__ == '__main__':

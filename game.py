@@ -16,27 +16,72 @@ MAX_ENEMY_HP = 5
 MIN_ENEMY_HP = 3
 
 class Game:
-    def __init__(self, window_title):
+    def __init__(self):
         # Object initialization
         self.lock = Lock()
         self.do_quit = False
         self.sprites = pygame.sprite.Group()
         self.add_queue = []
+        self.last_score = -1
+        self.score = 0
 
         # Pygame initialization
         pygame.init()
         self.size = self.width, self.height = 800, 600
         self.screen = pygame.display.set_mode(self.size)
-        pygame.display.set_caption(window_title)
+        self.update_score()
 
         # Sprites initialization
-        self.player = Player(game=self, gravity=1700, pos=[300, 200])
-        self.sprites.add(self.player)
+        self.player1 = Player(
+            base_image='player1.png',
+            hit_image='player1_hit.png',
+            hit_particle_image='player1_hit_particle.png',
+            game=self,
+            gravity=1700,
+            pos=[300, 200]
+        )
+        self.player2 = Player(
+            base_image='player2.png',
+            hit_image='player2_hit.png',
+            hit_particle_image='player2_hit_particle.png',
+            game=self,
+            gravity=1700,
+            pos=[500, 200]
+        )
+        self.sprites.add(self.player1)
+        self.sprites.add(self.player2)
 
-        self.health_osd = HealthOSD(game=self, pos=[620, 18])
-        self.sprites.add(self.health_osd)
+        self.health_osd1 = HealthOSD(game=self, target=self.player1, pos=[180, 18])
+        self.health_osd2 = HealthOSD(game=self, target=self.player2, pos=[620, 18])
+        self.sprites.add(self.health_osd1)
+        self.sprites.add(self.health_osd2)
 
         self.last_mob_spawn = None
+
+    def get_nearest_player(self, pos):
+        if self.player1.dead:
+            return self.player2
+        if self.player2.dead:
+            return self.player1
+        d1 = abs(self.player1.rect.center[0] - pos[0])
+        d2 = abs(self.player2.rect.center[0] - pos[0])
+        if d1 < d2:
+            return self.player1
+        else:
+            return self.player2
+
+    def get_random_player(self):
+        if self.player1.dead:
+            return self.player2
+        if self.player2.dead:
+            return self.player1
+        return [self.player1, self.player2][rd.randrange(0, 2)]
+
+    def update_score(self):
+        if self.last_score == self.score:
+            return
+        self.last_score = self.score
+        pygame.display.set_caption('pygame: score: {}'.format(self.score))
 
     def maybe_spawn_mobs(self):
         SPAWN_MOB_EACH = 2.0
@@ -60,6 +105,7 @@ class Game:
 
     def draw(self):
         with self.lock:
+            self.update_score()
             if self.do_quit:
                 raise ExitLoop()
 
@@ -72,17 +118,16 @@ class Game:
             for event in pygame.event.get():
                 self.process_event(event)
             self.process_keys()
-            if self.do_quit:
-                raise ExitLoop()
-            try:
-                self.sprites.add(*self.add_queue)
-                self.add_queue = []
-                self.remove_dead_sprites()
-                self.sprites.update()
-                self.maybe_spawn_mobs()
-            except GameOver:
+            if self.player1.dead and self.player2.dead:
                 self.do_quit = True
                 self.game_over()
+            if self.do_quit:
+                raise ExitLoop()
+            self.sprites.add(*self.add_queue)
+            self.add_queue = []
+            self.remove_dead_sprites()
+            self.sprites.update()
+            self.maybe_spawn_mobs()
 
     def process_event(self, event):
         if event.type == pygame.QUIT:
@@ -93,15 +138,24 @@ class Game:
 
     def process_keys(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.player.go_left()
-        if keys[pygame.K_RIGHT]:
-            self.player.go_right()
-        if keys[pygame.K_UP]:
-            self.player.jump()
-        if keys[pygame.K_SPACE]:
-            self.player.maybe_shoot()
-        pass
+        if not self.player1.dead:
+            if keys[pygame.K_LEFT]:
+                self.player1.go_left()
+            if keys[pygame.K_RIGHT]:
+                self.player1.go_right()
+            if keys[pygame.K_UP]:
+                self.player1.jump()
+            if keys[pygame.K_m]:
+                self.player1.maybe_shoot()
+        if not self.player2.dead:
+            if keys[pygame.K_s]:
+                self.player2.go_left()
+            if keys[pygame.K_f]:
+                self.player2.go_right()
+            if keys[pygame.K_e]:
+                self.player2.jump()
+            if keys[pygame.K_1]:
+                self.player2.maybe_shoot()
 
     @fatal_exceptions
     def draw_loop(self, fps):
@@ -125,7 +179,8 @@ class Game:
         self.add_queue.append(sprite)
 
     def game_over(self):
-        self.health_osd.update()
+        self.health_osd1.update()
+        self.health_osd2.update()
         self.sprites.draw(self.screen)
         image = load_image('game_over.png')
         rect = pygame.Rect((0, 0), self.size)

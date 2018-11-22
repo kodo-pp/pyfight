@@ -22,10 +22,11 @@ from laser import Laser
 from particle_explosion import particle_explosion
 
 class Player(FallingSprite):
-    def __init__(self, **kwargs):
+    def __init__(self, base_image, hit_image, hit_particle_image, **kwargs):
         super().__init__(**kwargs)
-        self.base_image = load_image('player.png')
-        self.hit_image = load_image('player_hit.png')
+        self.base_image = load_image(base_image)
+        self.hit_image = load_image(hit_image)
+        self.hit_particle_image = hit_particle_image
         self.image = self.base_image
         self.rect = self.image.get_rect()
         self.speed = [0.0, 0.0]
@@ -84,12 +85,14 @@ class Player(FallingSprite):
         return False
 
     def hit_by(self, enemy):
+        if self.dead:
+            return
         cur_time = time()
         if self.hit_at is not None and cur_time - self.hit_at < GRACE_PERIOD:
             return
         particle_explosion(
             game=self.game,
-            image='player_hit_particle.png',
+            image=self.hit_particle_image,
             pos=self.rect.center,
             min_speed=30,
             max_speed=50,
@@ -100,7 +103,8 @@ class Player(FallingSprite):
         self.hit_at = cur_time
         self.health -= 1
         if self.health <= 0:
-            raise GameOver()
+            self.die()
+            return
 
         vx = sign_choose(enemy.rect.center[0] - self.rect.center[0], -200, rd.choice([-200, 200]), 200)
         self.locked = True
