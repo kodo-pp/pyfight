@@ -1,3 +1,4 @@
+import random as rd
 from time import time
 
 from falling_sprite import FallingSprite
@@ -73,7 +74,7 @@ class Player(FallingSprite):
         if self.health <= 0:
             raise GameOver()
 
-        vx = sign_choose(enemy.rect.center[0] - self.rect.center[0], -200, 0, 200)
+        vx = sign_choose(enemy.rect.center[0] - self.rect.center[0], -200, rd.choice([-200, 200]), 200)
         self.locked = True
         self.speed = [vx, -500.0]
         
