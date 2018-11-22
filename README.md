@@ -4,7 +4,7 @@ A small 2D fighting game. It took me less than 8 hours to write the the first re
 ## Controls
 **Space** - shoot
 
-**Arrow keys** - move an jump
+**Arrow keys** - move and jump
 
 When you are near the wall, you can wall jump
 
