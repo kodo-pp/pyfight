@@ -2,9 +2,17 @@
 A small 2D fighting game. It took me less than 8 hours to write the the first release
 
 ## Controls
-**Space** - shoot
+**Arrow keys** - move and jump (Player 1)
 
-**Arrow keys** - move an jump
+**S, E, F** - move and jump (Player 2; left, jump and up respectively)
+
+**M** - shoot (Player 1)
+
+**L** - use sword (Player 1)
+
+**1** - shoot (Player 2)
+
+**2** - use sword (Player 2)
 
 When you are near the wall, you can wall jump
 
