@@ -16,6 +16,8 @@ class Enemy(FallingSprite):
         self.speed = [0, 0]
         self.hit_at = None
         self.health = health
+        self.hit_image = 'enemy_hit_particle.png'
+        self.death_image = 'enemy_death_particle.png'
 
     def maybe_hit_player(self):
         if self.rect.colliderect(self.game.player1.rect):
@@ -45,7 +47,7 @@ class Enemy(FallingSprite):
             return
         particle_explosion(
             game=self.game,
-            image='enemy_hit_particle.png',
+            image=self.hit_image,
             pos=self.rect.center,
             min_speed=ENEMY_HIT_PARTICLE_MIN_SPEED,
             max_speed=ENEMY_HIT_PARTICLE_MAX_SPEED,
@@ -72,7 +74,7 @@ class Enemy(FallingSprite):
         self.loot()
         particle_explosion(
             game=self.game,
-            image='enemy_death_particle.png',
+            image=self.death_image,
             pos=self.rect.center,
             min_speed=ENEMY_DEATH_PARTICLE_MIN_SPEED,
             max_speed=ENEMY_DEATH_PARTICLE_MAX_SPEED,

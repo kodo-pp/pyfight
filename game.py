@@ -8,6 +8,7 @@ from load_image import load_image
 from run_with_fps import run_with_fps, ExitLoop
 from fatal_exceptions import fatal_exceptions
 from enemy import Enemy
+from ranger import Ranger
 from player import Player
 from health_osd import HealthOSD
 from game_over import GameOver
@@ -90,15 +91,28 @@ class Game:
         if cur_time - self.last_mob_spawn < SPAWN_MOB_EACH:
             return False
         self.last_mob_spawn = cur_time
-        self.sprites.add(
-            Enemy(
-                health=rd.randint(MIN_ENEMY_HP, MAX_ENEMY_HP),
-                image='enemy.png',
-                game=self,
-                gravity=1700,
-                pos=[rd.randint(0, 800), 0]
+
+        c = rd.random()
+        if c < RANGER_SPAWN_CHANCE:
+            self.sprites.add(
+                Ranger(
+                    health=rd.randint(MIN_ENEMY_HP, MAX_ENEMY_HP),
+                    image='ranger.png',
+                    game=self,
+                    gravity=1700,
+                    pos=[rd.randint(0, 800), 0]
+                )
             )
-        )
+        else:
+            self.sprites.add(
+                Enemy(
+                    health=rd.randint(MIN_ENEMY_HP, MAX_ENEMY_HP),
+                    image='enemy.png',
+                    game=self,
+                    gravity=1700,
+                    pos=[rd.randint(0, 800), 0]
+                )
+            )
         return True
 
     def draw(self):

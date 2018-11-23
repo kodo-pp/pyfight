@@ -49,6 +49,9 @@ class FallingSprite(Sprite):
     def hits_left_wall(self):
         return abs(self.rect.left) < 1e-5
 
+    def hits_wall(self):
+        return self.hits_right_wall() or self.hits_left_wall()
+
     def jump(self, speed):
         if self.is_on_ground():
             self.speed[1] = -speed
