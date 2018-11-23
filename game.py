@@ -12,7 +12,7 @@ from player import Player
 from health_osd import HealthOSD
 from game_over import GameOver
 
-MAX_ENEMY_HP = 5
+MAX_ENEMY_HP = 8
 MIN_ENEMY_HP = 3
 
 class Game:
@@ -84,7 +84,7 @@ class Game:
         pygame.display.set_caption('pygame: score: {}'.format(self.score))
 
     def maybe_spawn_mobs(self):
-        SPAWN_MOB_EACH = 2.0
+        SPAWN_MOB_EACH = 1.0
         cur_time = time()
         if self.last_mob_spawn is None:
             self.last_mob_spawn = cur_time
@@ -132,9 +132,9 @@ class Game:
     def process_event(self, event):
         if event.type == pygame.QUIT:
             self.do_quit = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
-                self.do_quit = True
+        #elif event.type == pygame.KEYDOWN:
+        #    if event.key == pygame.K_q:
+        #        self.do_quit = True
 
     def process_keys(self):
         keys = pygame.key.get_pressed()
