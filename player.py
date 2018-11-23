@@ -7,6 +7,7 @@ from clamp import clamp
 from sign_choose import sign_choose
 from game_over import GameOver
 from laser import Laser
+from sword import Sword
 from particle_explosion import particle_explosion
 from config import *
 
@@ -106,8 +107,14 @@ class Player(FallingSprite):
         laser = Laser(self.game, speed, self.rect.center)
         self.game.add_sprite(laser)
         return True
+
+    def use_sword(self):
+        sword = Sword(self.game, self)
+        self.game.add_sprite(sword)
     
     def maybe_shoot(self):
+        if self.locked:
+            return False
         cur_time = time()
         if self.last_shot is None:
             self.last_shot = cur_time
@@ -118,5 +125,17 @@ class Player(FallingSprite):
         self.last_shot = cur_time
         self.shoot()
         return True
-        
-        
+    
+    def maybe_use_sword(self):
+        if self.locked:
+            return False
+        cur_time = time()
+        if self.last_shot is None:
+            self.last_shot = cur_time
+            return self.use_sword()
+
+        if cur_time - self.last_shot < PLAYER_SWORD_COOLDOWN:
+            return False
+        self.last_shot = cur_time
+        self.use_sword()
+        return True

@@ -5,6 +5,7 @@ from pygame.sprite import Sprite
 from load_image import load_image
 from enemy import Enemy
 from particle_explosion import particle_explosion
+from config import *
 
 
 class Laser(Sprite):
@@ -47,10 +48,10 @@ class Laser(Sprite):
             game=self.game,
             image='laser_particle.png',
             pos=self.rect.center,
-            min_speed=30,
-            max_speed=50,
-            min_lifespan=0.3,
-            max_lifespan=0.5,
-            count=7
+            min_speed=LASER_PARTICLE_MIN_SPEED,
+            max_speed=LASER_PARTICLE_MAX_SPEED,
+            min_lifespan=LASER_PARTICLE_MIN_LIFETIME,
+            max_lifespan=LASER_PARTICLE_MAX_LIFETIME,
+            count=LASER_PARTICLE_COUNT
         )
 

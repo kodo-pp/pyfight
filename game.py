@@ -82,7 +82,7 @@ class Game:
         pygame.display.set_caption('pygame: score: {}'.format(self.score))
 
     def maybe_spawn_mobs(self):
-        SPAWN_MOB_EACH = 1.3
+        SPAWN_MOB_EACH = 2.3
         cur_time = time()
         if self.last_mob_spawn is None:
             self.last_mob_spawn = cur_time
@@ -145,6 +145,8 @@ class Game:
                 self.player2.jump()
             if keys[pygame.K_m]:
                 self.player2.maybe_shoot()
+            if keys[pygame.K_l]:
+                self.player2.maybe_use_sword()
         if not self.player1.dead:
             if keys[pygame.K_s]:
                 self.player1.go_left()
@@ -154,6 +156,8 @@ class Game:
                 self.player1.jump()
             if keys[pygame.K_1]:
                 self.player1.maybe_shoot()
+            if keys[pygame.K_2]:
+                self.player2.maybe_use_sword()
 
     @fatal_exceptions
     def draw_loop(self, fps):
