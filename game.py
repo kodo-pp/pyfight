@@ -157,7 +157,7 @@ class Game:
             if keys[pygame.K_1]:
                 self.player1.maybe_shoot()
             if keys[pygame.K_2]:
-                self.player2.maybe_use_sword()
+                self.player1.maybe_use_sword()
 
     @fatal_exceptions
     def draw_loop(self, fps):
