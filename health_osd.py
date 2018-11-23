@@ -2,7 +2,7 @@ from osd import OSD
 from load_image import load_image
 from pygame import Surface
 from pygame.sprite import Group
-from player import MAX_HEALTH
+from config import *
 
 class Heart(OSD):
     def __init__(self, num, **kwargs):
@@ -23,12 +23,12 @@ class Heart(OSD):
 class HealthOSD(OSD):
     def __init__(self, pos, target, **kwargs):
         super().__init__(pos=pos, **kwargs)
-        self.image = Surface((36 * MAX_HEALTH, 36))
+        self.image = Surface((36 * PLAYER_MAX_HEALTH, 36))
         self.rect = self.image.get_rect()
         self.rect.center = pos
         self.hearts = Group()
         self.target = target
-        for i in range(MAX_HEALTH):
+        for i in range(PLAYER_MAX_HEALTH):
             self.hearts.add(Heart(i, pos=[-1, -1], **kwargs))
         self.last_health = -1
 

@@ -11,9 +11,7 @@ from enemy import Enemy
 from player import Player
 from health_osd import HealthOSD
 from game_over import GameOver
-
-MAX_ENEMY_HP = 8
-MIN_ENEMY_HP = 3
+from config import *
 
 class Game:
     def __init__(self):
@@ -38,7 +36,7 @@ class Game:
             hit_particle_image='player1_hit_particle.png',
             game=self,
             gravity=1700,
-            pos=[300, 200]
+            pos=PLAYER1_POS
         )
         self.player2 = Player(
             base_image='player2.png',
@@ -46,7 +44,7 @@ class Game:
             hit_particle_image='player2_hit_particle.png',
             game=self,
             gravity=1700,
-            pos=[500, 200]
+            pos=PLAYER2_POS
         )
         self.sprites.add(self.player1)
         self.sprites.add(self.player2)
@@ -84,7 +82,7 @@ class Game:
         pygame.display.set_caption('pygame: score: {}'.format(self.score))
 
     def maybe_spawn_mobs(self):
-        SPAWN_MOB_EACH = 1.0
+        SPAWN_MOB_EACH = 1.3
         cur_time = time()
         if self.last_mob_spawn is None:
             self.last_mob_spawn = cur_time
