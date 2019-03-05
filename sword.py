@@ -40,8 +40,9 @@ class Sword(Sprite):
 
     def hit_enemies(self):
         ret = False
+        other_player = self.game.player1 if self.owner is self.game.player2 else self.game.player2
         for sprite in self.game.sprites:
-            if self.rect.colliderect(sprite.rect) and isinstance(sprite, Enemy):
+            if self.rect.colliderect(sprite.rect) and (isinstance(sprite, Enemy) or sprite is other_player):
                 sprite.hit_by(self)
                 ret = True
                 particle_explosion(

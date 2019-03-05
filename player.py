@@ -104,7 +104,7 @@ class Player(FallingSprite):
         speed = [sign_choose(self.speed[0], 1000, None, -1000), 0]
         if speed[0] is None:
             return False
-        laser = Laser(self.game, speed, self.rect.center)
+        laser = Laser(self.game, speed, self.rect.center, owner=self)
         self.game.add_sprite(laser)
         return True
 

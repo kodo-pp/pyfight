@@ -83,7 +83,7 @@ class Game:
         pygame.display.set_caption('pygame: score: {}'.format(self.score))
 
     def maybe_spawn_mobs(self):
-        SPAWN_MOB_EACH = 2.3
+        SPAWN_MOB_EACH = 7.0
         cur_time = time()
         if self.last_mob_spawn is None:
             self.last_mob_spawn = cur_time

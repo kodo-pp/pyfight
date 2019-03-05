@@ -9,7 +9,7 @@ from config import *
 
 
 class Laser(Sprite):
-    def __init__(self, game, speed, pos):
+    def __init__(self, game, speed, pos, owner):
         super().__init__()
         self.image = load_image('laser.png')
         self.rect = self.image.get_rect()
@@ -18,6 +18,7 @@ class Laser(Sprite):
         self.last_time = time()
         self.dead = False
         self.game = game
+        self.owner = owner
 
     def update(self):
         cur_time = time()
@@ -29,8 +30,9 @@ class Laser(Sprite):
         self.maybe_leave_screen()
 
     def maybe_hit_enemy(self):
+        other_player = self.game.player1 if self.owner is self.game.player2 else self.game.player2
         for sprite in self.game.sprites:
-            if self.rect.colliderect(sprite.rect) and isinstance(sprite, Enemy):
+            if self.rect.colliderect(sprite.rect) and (isinstance(sprite, Enemy) or sprite is other_player):
                 sprite.hit_by(self)
                 self.die()
                 return True
